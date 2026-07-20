@@ -293,6 +293,7 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   padding: 12px 20px;
   border-radius: 4px;
   border: 1px solid transparent;
+  background: transparent;
   cursor: pointer;
 }
 .btn:hover { text-decoration: none; }

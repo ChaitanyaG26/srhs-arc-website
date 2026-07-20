@@ -5,7 +5,7 @@
 (function () {
   const GRID_W = 64;
   const GRID_H = 48;
-  const MIN_BLOB_CELLS = 9;
+  const MIN_BLOB_CELLS = 10;
   const MAX_BOXES = 8;
 
   const COLOR_META = {
@@ -40,13 +40,19 @@
 
   function classify(r, g, b) {
     const [h, s, v] = rgbToHsv(r, g, b);
-    if (s < 0.42 || v < 0.22) return 0;
-    if (h >= 350 || h < 8) {
+
+    // green: real-world green objects read as noticeably less saturated
+    // and darker than red/blue under normal indoor lighting, so it gets
+    // the most forgiving thresholds and the widest hue window.
+    if (h >= 80 && h < 170 && s >= 0.22 && v >= 0.16) return 2;
+
+    if (h >= 195 && h < 255 && s >= 0.32 && v >= 0.18) return 3; // blue
+
+    if ((h >= 347 || h < 10) && s >= 0.36 && v >= 0.20) {
       if (isSkinTone(r, g, b)) return 0;
       return 1; // red
     }
-    if (h >= 100 && h < 155) return 2;  // green
-    if (h >= 195 && h < 250) return 3;  // blue
+
     return 0;
   }
 
@@ -103,6 +109,48 @@
     let rafId = null;
     let facing = "environment"; // defaults to the rear/world camera
     let switching = false;
+    let tracks = []; // smoothed, persisted boxes: {cls, x, y, w, h, misses}
+
+    const SMOOTHING = 0.45;   // higher = snappier, lower = smoother
+    const MAX_MISSES = 5;     // frames a track survives with no fresh match
+
+    function iou(a, b) {
+      const x1 = Math.max(a.x, b.x), y1 = Math.max(a.y, b.y);
+      const x2 = Math.min(a.x + a.w, b.x + b.w), y2 = Math.min(a.y + a.h, b.y + b.h);
+      const iw = Math.max(0, x2 - x1), ih = Math.max(0, y2 - y1);
+      const inter = iw * ih;
+      if (inter <= 0) return 0;
+      const union = a.w * a.h + b.w * b.h - inter;
+      return union > 0 ? inter / union : 0;
+    }
+
+    function updateTracks(rawBoxes) {
+      const unmatched = rawBoxes.slice();
+      for (const track of tracks) {
+        let bestIdx = -1, bestScore = 0.12; // minimum overlap to count as the same object
+        for (let i = 0; i < unmatched.length; i++) {
+          if (unmatched[i].cls !== track.cls) continue;
+          const score = iou(track, unmatched[i]);
+          if (score > bestScore) { bestScore = score; bestIdx = i; }
+        }
+        if (bestIdx >= 0) {
+          const raw = unmatched.splice(bestIdx, 1)[0];
+          track.x += (raw.x - track.x) * SMOOTHING;
+          track.y += (raw.y - track.y) * SMOOTHING;
+          track.w += (raw.w - track.w) * SMOOTHING;
+          track.h += (raw.h - track.h) * SMOOTHING;
+          track.misses = 0;
+        } else {
+          track.misses += 1;
+        }
+      }
+      tracks = tracks.filter((t) => t.misses <= MAX_MISSES);
+      for (const raw of unmatched) {
+        tracks.push({ cls: raw.cls, x: raw.x, y: raw.y, w: raw.w, h: raw.h, misses: 0 });
+      }
+      tracks.sort((a, b) => b.w * b.h - a.w * a.h);
+      tracks = tracks.slice(0, MAX_BOXES);
+    }
 
     function applyMirror() {
       const mirrored = facing === "user";
@@ -142,6 +190,7 @@
       video.playsInline = true;
       video.srcObject = stream;
       await video.play();
+      tracks = [];
       applyMirror();
     }
 
@@ -153,17 +202,25 @@
         for (let i = 0; i < GRID_W * GRID_H; i++) {
           labels[i] = classify(frame[i * 4], frame[i * 4 + 1], frame[i * 4 + 2]);
         }
-        const boxes = findBoxes(labels, GRID_W, GRID_H);
+        const gridBoxes = findBoxes(labels, GRID_W, GRID_H);
 
         if (canvas.width !== video.videoWidth) canvas.width = video.videoWidth;
         if (canvas.height !== video.videoHeight) canvas.height = video.videoHeight;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const sx = canvas.width / GRID_W, sy = canvas.height / GRID_H;
-        for (const box of boxes) {
-          const meta = COLOR_META[box.cls];
-          const x = box.minX * sx, y = box.minY * sy;
-          const w = (box.maxX - box.minX + 1) * sx, h = (box.maxY - box.minY + 1) * sy;
+        const rawBoxes = gridBoxes.map((box) => ({
+          cls: box.cls,
+          x: box.minX * sx,
+          y: box.minY * sy,
+          w: (box.maxX - box.minX + 1) * sx,
+          h: (box.maxY - box.minY + 1) * sy,
+        }));
+        updateTracks(rawBoxes);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const t of tracks) {
+          const meta = COLOR_META[t.cls];
+          const x = t.x, y = t.y, w = t.w, h = t.h;
 
           ctx.lineWidth = Math.max(2, canvas.width * 0.004);
           ctx.strokeStyle = meta.stroke;
@@ -226,6 +283,7 @@
 
     function stopCamera() {
       stopStream();
+      tracks = [];
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       startBtn.hidden = false;
       stopBtn.hidden = true;
