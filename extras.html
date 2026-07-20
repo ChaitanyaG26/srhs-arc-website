@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extras | SRHS ARC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="inner">
+    <a class="brand" href="index.html">
+      <img src="https://static.wixstatic.com/media/2b9570_c14799e6c22e4a90b984b687d0b6f3b9~mv2.png" alt="ARC logo">
+      <span>Aerospace Robotics Club<span class="tag">SCRIPPS RANCH HS · THE FLYING FALCONS</span></span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">MENU</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="overview.html">Overview</a></li>
+      <li><a href="past-years.html">Past Years</a></li>
+      <li><a href="roles-and-updates.html">Roles &amp; Updates</a></li>
+      <li><a href="extras.html" aria-current="page">Extras</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" style="padding:60px 0 50px;">
+  <div class="container">
+    <div class="hero-eyebrow">INTERACTIVE CAD &amp; LIVE DEMOS</div>
+    <h1>Extras</h1>
+    <p class="lede">Interactive 3D models of our drone assemblies, and a live camera demo that spots red, green, and blue in real time.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="waypoint"><span class="code">WP&#8209;01</span><span>Interactive CAD Models</span><span class="rule"></span></div>
+    <p style="max-width:640px; margin-bottom:36px;">Drag to rotate, scroll or pinch to zoom, and tap the AR icon on a supported phone to view either assembly in your own space.</p>
+    <div class="grid grid-2">
+      <div>
+        <div class="model-frame">
+          <model-viewer
+            src="assets/models/Drone-24-25.glb"
+            alt="24-25 season drone assembly, interactive 3D model"
+            camera-controls
+            auto-rotate
+            auto-rotate-delay="1500"
+            rotation-per-second="18deg"
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar
+            ar-modes="webxr scene-viewer quick-look">
+          </model-viewer>
+        </div>
+        <div class="model-caption">
+          <h3>2024&ndash;25 Drone Assembly</h3>
+          <div class="model-hint">CAD &rarr; STEP &rarr; glTF · rotate / zoom / AR</div>
+        </div>
+      </div>
+      <div>
+        <div class="model-frame">
+          <model-viewer
+            src="assets/models/Drone-25-26.glb"
+            alt="25-26 season drone assembly, interactive 3D model"
+            camera-controls
+            auto-rotate
+            auto-rotate-delay="1500"
+            rotation-per-second="18deg"
+            shadow-intensity="1"
+            exposure="1"
+            environment-image="neutral"
+            ar
+            ar-modes="webxr scene-viewer quick-look">
+          </model-viewer>
+        </div>
+        <div class="model-caption">
+          <h3>2025&ndash;26 Drone Assembly</h3>
+          <div class="model-hint">CAD &rarr; STEP &rarr; glTF · rotate / zoom / AR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="waypoint"><span class="code">WP&#8209;02</span><span>Live Color Recognition</span><span class="rule"></span></div>
+    <p style="max-width:640px; margin-bottom:32px;">Uses your camera to spot red, green, and blue objects in real time and draws a labeled box around each one. Runs entirely in your browser — nothing is uploaded or recorded.</p>
+
+    <div class="camera-frame">
+      <video id="cam-video" playsinline muted></video>
+      <canvas id="cam-canvas"></canvas>
+      <div class="camera-msg" id="cam-msg">Tap "Start Camera" below and allow camera access to begin detecting colors.</div>
+    </div>
+
+    <div class="camera-controls">
+      <button class="btn btn-primary" id="cam-start">Start Camera</button>
+      <button class="btn btn-ghost" id="cam-stop" hidden>Stop Camera</button>
+    </div>
+
+    <div class="color-legend">
+      <span><span class="dot" style="background:#ef4444;"></span>Red</span>
+      <span><span class="dot" style="background:#22c55e;"></span>Green</span>
+      <span><span class="dot" style="background:#3b82f6;"></span>Blue</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <div class="brand"><img src="https://static.wixstatic.com/media/2b9570_36ea894a4a0349b285a9c2c9de8674a9~mv2.png" alt="ARC logo" style="width:28px;height:28px;"><span>Aerospace Robotics</span></div>
+        <p class="contact-line"><strong>Email:</strong> arc.falcons@gmail.com</p>
+        <p class="contact-line"><strong>Discord:</strong> <a href="https://discord.gg/M6mFgkSvm">discord.gg/M6mFgkSvm</a></p>
+        <p class="contact-line"><strong>Phone:</strong> (619) 549-7383</p>
+        <p class="contact-line"><strong>Address:</strong> 11454 Blue Cypress Dr, San Diego, CA</p>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="overview.html">Overview</a></li>
+          <li><a href="past-years.html">Past Years</a></li>
+          <li><a href="roles-and-updates.html">Roles &amp; Updates</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="copyright">&copy; 2024 ARC, "The Flying Falcons." All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/color-detect.js"></script>
+</body>
+</html>
