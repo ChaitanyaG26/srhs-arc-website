@@ -34,10 +34,10 @@
 
   function classify(r, g, b) {
     const [h, s, v] = rgbToHsv(r, g, b);
-    if (s < 0.38 || v < 0.22) return 0;
-    if (h >= 345 || h < 12) return 1;   // red
-    if (h >= 95 && h < 160) return 2;   // green
-    if (h >= 195 && h < 255) return 3;  // blue
+    if (s < 0.28 || v < 0.16) return 0;
+    if (h >= 340 || h < 15) return 1;   // red
+    if (h >= 85 && h < 165) return 2;   // green
+    if (h >= 190 && h < 260) return 3;  // blue
     return 0;
   }
 
@@ -87,6 +87,7 @@
     off.width = GRID_W;
     off.height = GRID_H;
     const offCtx = off.getContext("2d", { willReadFrequently: true });
+    if ("filter" in offCtx) offCtx.filter = "brightness(1.25) saturate(1.35) contrast(1.05)";
 
     let stream = null;
     let rafId = null;
@@ -130,8 +131,14 @@
 
     async function startCamera() {
       try {
+        video.muted = true;
+        video.playsInline = true;
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
           audio: false,
         });
         video.srcObject = stream;

@@ -329,17 +329,25 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
 .card h3 { color: var(--ink); }
 .card p:last-child { margin-bottom: 0; }
 .card .icon {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--cyan);
-  border-radius: 50%;
+  width: 30px;
+  height: 22px;
+  border: 1px solid var(--panel-line);
+  border-left: 2px solid var(--cyan);
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--cyan);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   margin-bottom: 16px;
+}
+.card-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* ---------- Stats band ---------- */
@@ -379,10 +387,12 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   width: 84px;
   height: 84px;
   object-fit: cover;
+  object-position: 50% 20%;
   border-radius: 8px;
   flex-shrink: 0;
   border: 1px solid var(--panel-line);
 }
+.quote-block img.face-top { object-position: 50% 10%; }
 .quote-block > div { flex: 1 1 240px; min-width: 0; }
 .quote-block blockquote {
   margin: 0 0 8px;
@@ -397,6 +407,14 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   color: var(--amber);
   letter-spacing: 0.05em;
 }
+.quote-grid .quote-block {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  height: 100%;
+}
+.quote-grid .quote-block img { width: 64px; height: 64px; }
+.quote-grid .quote-block blockquote { font-size: 0.92rem; }
 
 /* ---------- CTA band ---------- */
 .cta-band {
@@ -414,7 +432,8 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   overflow: hidden;
   text-align: left;
 }
-.roster-card img { width: 100%; height: 190px; object-fit: cover; }
+.roster-card img { width: 100%; height: 190px; object-fit: cover; object-position: 50% 22%; }
+.roster-card img.face-top { object-position: 50% 12%; }
 .roster-card .body { padding: 16px 18px 20px; }
 .roster-card .name { font-family: var(--font-display); color: var(--ink); font-weight: 600; margin-bottom: 2px; }
 .roster-card .role { font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); letter-spacing: 0.04em; }
@@ -427,8 +446,10 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   border-bottom: 1px solid var(--panel-line);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.tabs::-webkit-scrollbar { display: none; height: 0; }
 .tab {
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -459,17 +480,23 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
 
 /* ---------- Placeholder note (highlighted "fill this in" box) ---------- */
 .placeholder-note {
-  background: repeating-linear-gradient(135deg, rgba(245,166,35,0.14), rgba(245,166,35,0.14) 10px, rgba(245,166,35,0.22) 10px, rgba(245,166,35,0.22) 20px);
-  border: 1.5px dashed var(--amber);
+  background: rgba(245,166,35,0.09);
+  border: 1px dashed var(--amber);
+  border-left: 3px solid var(--amber);
   color: var(--amber);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 16px 18px;
-  border-radius: 6px;
+  padding: 14px 18px;
+  border-radius: 4px;
   margin: 0 0 34px;
+}
+.placeholder-note.compact {
+  font-size: 0.68rem;
+  padding: 10px 12px;
+  margin: 0 0 10px;
 }
 
 /* ---------- CAD model viewer ---------- */
@@ -508,7 +535,7 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--panel-line);
-  background: #000;
+  background: var(--panel);
 }
 .camera-frame video,
 .camera-frame canvas {
@@ -516,7 +543,7 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 .camera-msg {
   position: absolute;
@@ -557,6 +584,35 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   border-radius: 50%;
   margin-right: 6px;
   vertical-align: -1px;
+}
+
+/* ---------- ARC Photo Gallery (self-scrolling) ---------- */
+.gallery-viewport {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.gallery-track {
+  display: flex;
+  gap: clamp(10px, 2vw, 16px);
+  width: max-content;
+  animation: gallery-scroll 55s linear infinite;
+}
+.gallery-viewport:hover .gallery-track { animation-play-state: paused; }
+.gallery-item {
+  flex: 0 0 auto;
+  width: clamp(150px, 20vw, 230px);
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--panel-line);
+  background: var(--panel);
+}
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@keyframes gallery-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 /* ---------- Info list (Overview page) ---------- */
