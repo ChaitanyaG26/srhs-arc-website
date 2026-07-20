@@ -26,6 +26,8 @@
 
 *, *::before, *::after { box-sizing: border-box; min-width: 0; }
 
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; overflow-x: hidden; }
 body { overflow-x: hidden; }
 
@@ -545,6 +547,10 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   height: 100%;
   object-fit: cover;
 }
+.camera-frame video.mirrored,
+.camera-frame canvas.mirrored {
+  transform: scaleX(-1);
+}
 .camera-msg {
   position: absolute;
   inset: 0;
@@ -559,6 +565,7 @@ a:focus-visible, button:focus-visible, .tab:focus-visible {
   color: var(--muted);
   background: rgba(7,11,20,0.85);
 }
+.camera-msg[hidden] { display: none; }
 .camera-controls {
   display: flex;
   gap: 12px;
