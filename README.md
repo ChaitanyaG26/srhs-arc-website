@@ -1,6 +1,6 @@
 # SRHS Aerospace Robotics Club — Website
 
-A coded rebuild of the ARC Wix site (no Wix watermark, free hosting via GitHub Pages). Hopefully this works.
+A coded rebuild of the ARC Wix site (no Wix watermark, free hosting via GitHub Pages). Hopefully this works. Deploying again to test actions.
 
 ## What's here
 
